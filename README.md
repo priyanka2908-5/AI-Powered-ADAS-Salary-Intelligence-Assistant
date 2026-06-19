@@ -82,8 +82,10 @@ The platform leverages Google Gemini to:
 * Generative AI Integration
 * Prompt Engineering
 * GitHub Project Management
+  
 
 ---
+## NOTE: API creddentials are excluded from this repository for security reasons. Create a .env file and add a valid Gemini API Key before running the application.
 
 ## 👩‍💻 Developed By
 
