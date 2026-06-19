@@ -85,7 +85,7 @@ The platform leverages Google Gemini to:
   
 
 ---
-## NOTE: API creddentials are excluded from this repository for security reasons. Create a .env file and add a valid Gemini API Key before running the application.
+## NOTE: API creddentials are excluded from this repository for security reasons. Replace "YOUR_GEMINI_API_KEY" in app.py with your own Gemini API key before running the application.
 
 ## 👩‍💻 Developed By
 
