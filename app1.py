@@ -1,12 +1,24 @@
 import streamlit as st
 import pandas as pd
 import google.generativeai as genai
+from dotenv import load_dotenv
+import os
+
+# =====================================
+# LOAD ENV FILE
+# =====================================
+
+load_dotenv()
+
+API_KEY = os.getenv("GEMINI_API_KEY")
+
+if not API_KEY:
+    st.error("Gemini API Key not found. Please add it to your .env file.")
+    st.stop()
 
 # =====================================
 # GEMINI CONFIGURATION
 # =====================================
-
-API_KEY = "YOUR_GEMINI_API_KEY"
 
 genai.configure(api_key=API_KEY)
 
@@ -16,7 +28,11 @@ model = genai.GenerativeModel("gemini-2.5-flash")
 # LOAD DATASET
 # =====================================
 
-df = pd.read_excel("cleaned_data_final.xlsx")
+try:
+    df = pd.read_excel("cleaned_data_final.xlsx")
+except Exception as e:
+    st.error(f"Dataset Loading Error: {e}")
+    st.stop()
 
 # =====================================
 # PAGE SETTINGS
@@ -31,7 +47,7 @@ st.title("🤖 ADAS Salary Intelligence Assistant")
 
 st.success("Dataset Loaded Successfully!")
 
-st.write(f"Total Records: {len(df)}")
+st.write(f"📊 Total Records: {len(df)}")
 
 # =====================================
 # USER INPUT
@@ -61,8 +77,7 @@ if question:
             st.success("Answer")
 
             st.write(
-                f"🏆 Highest paying role: "
-                f"{highest['standard_role']}"
+                f"🏆 Highest Paying Role: {highest['standard_role']}"
             )
 
             st.write(
@@ -79,8 +94,7 @@ if question:
             st.success("Answer")
 
             st.write(
-                f"📉 Lowest paying role: "
-                f"{lowest['standard_role']}"
+                f"📉 Lowest Paying Role: {lowest['standard_role']}"
             )
 
             st.write(
@@ -103,13 +117,11 @@ if question:
             st.success("Answer")
 
             st.write(
-                f"📍 Highest paying location: "
-                f"{top_location}"
+                f"📍 Highest Paying Location: {top_location}"
             )
 
             st.write(
-                f"💰 Average Salary: "
-                f"₹{location_salary.iloc[0]:,.0f}"
+                f"💰 Average Salary: ₹{location_salary.iloc[0]:,.0f}"
             )
 
         # ---------------------------------
@@ -120,11 +132,11 @@ if question:
             st.success("Answer")
 
             st.write(
-                f"📊 Total records in dataset: {len(df)}"
+                f"📊 Total Records in Dataset: {len(df)}"
             )
 
         # ---------------------------------
-        # AVERAGE SALARY
+        # OVERALL AVERAGE SALARY
         # ---------------------------------
         elif "average salary" in q:
 
@@ -133,8 +145,7 @@ if question:
             st.success("Answer")
 
             st.write(
-                f"💰 Overall Average Salary: "
-                f"₹{avg_salary:,.0f}"
+                f"💰 Overall Average Salary: ₹{avg_salary:,.0f}"
             )
 
         # ---------------------------------
@@ -155,7 +166,7 @@ if question:
             prompt = f"""
 You are an ADAS Salary Intelligence Assistant.
 
-Use ONLY the dataset below.
+Use ONLY the dataset provided below to answer the question.
 
 Dataset:
 {dataset_summary}
@@ -163,12 +174,14 @@ Dataset:
 Question:
 {question}
 
-Provide a clear and professional answer.
+Instructions:
+- Answer clearly and professionally.
+- Use only dataset information.
+- Do not make assumptions.
+- If data is unavailable, say so.
 """
 
-            response = model.generate_content(
-                prompt
-            )
+            response = model.generate_content(prompt)
 
             st.success("Gemini Analysis")
 
